@@ -1,6 +1,6 @@
 function doGet() {
   return HtmlService.createTemplateFromFile('Index').evaluate()
-  .setTitle('Form Input Nota Transaksi')
+  .setTitle('Form Input Nota Transaksi') //masukan sesuai kemauan anda
   .addMetaTag('viewport', 'width=device-width, initial-scale=1')
   .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.DEFAULT)
 }
@@ -9,20 +9,15 @@ function doGet() {
 /* DEFINE GLOBAL VARIABLES, CHANGE THESE VARIABLES TO MATCH WITH YOUR SHEET */
 function globalVariables(){ 
   var varArray = {
-    spreadsheetId   : '1Hh9cu56SLZ88vPIHzaMlgsIsmguqps669sUe1nIARo4',
-    dataRage        : 'Master_RDA!A2:K',                                    
-    idRange         : 'Master_RDA!A2:A',                                    
-    lastCol         : 'K',                                            
-    insertRange     : 'Master_RDA!A1:K1',                                   
+    spreadsheetId   : 'ISI_DENGAN_ID_SPREADSHEET_ANDA', //isi dengan id spreadsheet anda
+    dataRage        : 'nama_shet!rangeawal:rangeakhir', //isi dengan nama sheet anda & rangenya, misalkan A1:D                                    
+    idRange         : 'namasheet!rangeid:range',  //misalkan 'nama_sheet!A1:A'                                 
+    lastCol         : 'K', //sesuaikan dengan kolom terakhir sheet anda                                           
+    insertRange     : 'namasheet!kolomawal:kolomakhir',  //sesuaikan sesuai range kolom sheet anda                               
     sheetID         : '0'                                             
   };
   return varArray;
 }
-
-/*
-# PROCESSING FORM ---------------------------------------------------------------------------------
-*/
-
 
 /* PROCESS FORM */
 function processForm(formObject){  
@@ -34,26 +29,26 @@ function processForm(formObject){
   return getAllData();//Return last 10 rows
 }
 
-var folder = DriveApp.getFolderById('1KdvC3F5Fsq0OLdmuBYjY-41gZH2P0YEI');
+var folder = DriveApp.getFolderById('your_google_drive_id'); //si dengan id google drive anda
 function getFormValues(formObject){
   if(formObject.actID && checkID(formObject.actID)){
     let file = folder.createFile(formObject.myFile).getUrl()
     var values = [[
-                  formObject.actID.toString(),
-                  formObject.date,
-                  formObject.projectID,
-                  formObject.picName,
-                  formObject.detailAct,
-                  formObject.cost,
-                  formObject.city,
-                  formObject.siteName,
-                  formObject.costCA,
-                  formObject.resultDet,
-                  file]];
+                  formObject.actID.toString(), //sesuaikan dengan variabel dan sheet anda
+                  formObject.date,             //sesuaikan dengan variabel dan sheet anda
+                  formObject.projectID,        //sesuaikan dengan variabel dan sheet anda
+                  formObject.picName,          //sesuaikan dengan variabel dan sheet anda
+                  formObject.detailAct,        //sesuaikan dengan variabel dan sheet anda
+                  formObject.cost,             //sesuaikan dengan variabel dan sheet anda
+                  formObject.city,             //sesuaikan dengan variabel dan sheet anda
+                  formObject.siteName,         //sesuaikan dengan variabel dan sheet anda
+                  formObject.costCA,           //sesuaikan dengan variabel dan sheet anda
+                  formObject.resultDet,        //sesuaikan dengan variabel dan sheet anda
+                  file]];                      //sesuaikan dengan variabel dan sheet anda
   }else{
     let file = folder.createFile(formObject.myFile).getUrl()
     var values = [[
-                  formObject.date,
+                  formObject.date,            
                   formObject.projectID,
                   formObject.picName,
                   formObject.detailAct,
@@ -67,7 +62,7 @@ function getFormValues(formObject){
   return values;
 }
 
-/* CREATE/ APPEND DATA */
+/* CREATEDATA */
 function appendData(values, spreadsheetId,range){
   var valueRange = Sheets.newRowData();
   valueRange.values = values;
@@ -107,7 +102,7 @@ function getRangeByID(id){
     var idList = readData(globalVariables().spreadsheetId,globalVariables().idRange);
     for(var i=0;i<idList.length;i++){
       if(id==idList[i][0]){
-        return 'Master_RDA!A'+(i+2)+':'+globalVariables().lastCol+(i+2);
+        return 'namasheet!rangeidanda'+(i+2)+':'+globalVariables().lastCol+(i+2);
       }
     }
   }

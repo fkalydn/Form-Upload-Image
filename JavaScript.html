@@ -1,88 +1,187 @@
-<link href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css" rel="stylesheet">
-<link href="https://cdn.datatables.net/responsive/2.3.0/css/responsive.dataTables.min.css" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@500&display=swa"p rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<!--DataTable Js --> 
 
-<style>
+<script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+<script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.3.0/js/dataTables.responsive.min.js"></script>
 
-  body {
-  font-family: 'Roboto', sans-serif;
-  font-size: .875rem;
-  background-color: #007D85;
-  margin: 0;
-  padding: 0;
+<script>     
+
+function handleFormSubmit(formObject) {
+  event.preventDefault();
+
+  // Tampilkan efek loading dan mencegah pengiriman ganda
+  var submitButton = formObject.querySelector('button[type="submit"]');
+  submitButton.disabled = true;
+  submitButton.innerHTML = 'Mengirim <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
+
+  // Kirim data ke server
+  google.script.run.withSuccessHandler(function(response) {
+    // Ambil data terbaru dari server
+    google.script.run.withSuccessHandler(function(updatedDataArray) {
+      createTable(updatedDataArray); // Perbarui tabel dengan data baru
+      showNotification(response.message, true); // Tampilkan notifikasi berhasil
+      submitButton.disabled = false;
+      submitButton.innerHTML = 'Submit';
+    }).getAllData();
+  }).withFailureHandler(function(error) {
+    showNotification('Terjadi kesalahan saat mengirim data.', false); // Tampilkan notifikasi kesalahan
+    submitButton.disabled = false;
+    submitButton.innerHTML = 'Submit';
+  }).processForm(formObject);
 }
 
-.btn-group-xs > .btn, .btn-xs {
-  padding: .25rem .4rem;
-  font-size: .875rem;
-  line-height: .5;
-  border-radius: .2rem;
+  //GET ALL DATA
+  function getAllData(){
+    google.script.run.withSuccessHandler(createTable).getAllData();
+  }
+  
+  //CREATE THE DATA TABLE
+  google.script.run.withSuccessHandler(createTable).getAllData();
+  function createTable(dataArray) {
+    document.getElementById("myForm").reset();
+    document.getElementById("btnclose").click();
+    if(dataArray){
+        //sesuaikan dengan isi sheet anda
+      var result = "<table class='table table-sm' style='font-size:0.8em'>"+
+                   "<thead style='white-space: nowrap'>"+
+                     "<tr>"+                               
+                      "<th scope='col'>Activity ID</th>"+
+                      "<th scope='col'>Date</th>"+
+                      "<th scope='col'>Project ID</th>"+
+                      "<th scope='col'>PIC Name</th>"+
+                      "<th scope='col'>Detail Activity</th>"+
+                      "<th scope='col'>Cash Advance</th>"+
+                      "<th scope='col'>City</th>"+
+                      "<th scope='col'>Site Name</th>"+
+                      "<th scope='col'>Cost</th>"+
+                      "<th scope='col'>Result Details</th>"+
+                      "<th scope='col'>Foto Nota</th>"+
+                      "<th scope='col'>Edit</th>"+
+                    "</tr>"+
+                  "</thead>";
+      for(var i=0; i<dataArray.length; i++) {
+          result += "<tr>";
+          for(var j=0; j<dataArray[i].length; j++){
+
+            result += '<td>'+ (dataArray[i][j]= /www |http/.test(dataArray[i][j]) ? '<a class="btn btn-primary text-white btn-xs" target="_blank" href='+dataArray[i][j] + '><i class="far fa-arrow-alt-circle-down"></i> Foto</a>': dataArray[i][j]) + '</td>';
+          }
+            result += "<td><button type='button' class='btn btn-warning btn-xs editBtn' data-bs-toggle='modal' data-bs-target='#staticBackdrop' onclick='editData(this);'><i class='fa-solid fa-pen-to-square'></i>Edit</button></td>";
+            result += "</tr>";
+      }
+      result += "</table>";
+
+      var div = document.getElementById('dataTable');
+      div.innerHTML = result;
+      $(document).ready(function() {
+      $('#dataTable').DataTable({
+
+          destroy:true,
+          lengthMenu: [
+          [10, 25, 50, 100, -1 ],
+          ['10', '25', '50','100', 'All' ]
+      ],
+
+      //   columnDefs:[
+      //     {
+      //     targets: [8,9],
+      //     className: 'all',
+      //     },
+      //  ],
+
+      columnDefs: [
+      // {
+      //   targets: [2], // Indeks kolom "Project ID"
+      //   visible: false, // Sembunyikan kolom "Project ID"
+      // },
+        {
+          targets: [10,11],
+          className: 'all', // Beri kelas CSS 'hidden' pada kolom-kolom tersebut
+        },
+      ],
+
+
+      language: {
+      sProcessing: "Processing...",
+      sLengthMenu: "_MENU_ ",
+      sZeroRecords: "No data found",
+      sInfo: '<i class="fas fa-angle-double-left"></i> Showing _START_ to _END_ of _TOTAL_ <i class="fas fa-angle-double-right"></i>',
+      sInfoEmpty: "Showing 0 to 0 of 0 rows",
+      sInfoFiltered: "(filtered from _MAX_ total rows)",
+      sInfoPostFix: "",
+      sSearch: '<i class="fas fa-search" fa-2x></i> Search:',
+      sUrl: "",
+      oPaginate: {
+        sFirst: "First",
+        sPrevious: '<i class="fas fa-chevron-left fa-lg" ></i>',
+        sNext: '<i class="fas fa-chevron-right fa-lg"></i>',
+        sLast: "Last"
+      }, 
+},
+
+
+      });
+      } );
+      document.getElementById("message").innerHTML = "";
+    }else{
+      var div = document.getElementById('dataTable');
+      div.innerHTML = "Data not found!";
+    }
+  }
+  
+  //EDIT DATA
+  function editData(el) {
+  // Menghapus atribut disabled dan mengatur teks tombol kembali ke "Submit"
+  var submitButton = document.querySelector('button[type="submit"]');
+  submitButton.removeAttribute("disabled");
+  submitButton.innerHTML = "Submit";
+
+  // Lanjutkan dengan proses mengedit seperti biasa
+  var recordId = el.parentNode.parentNode.cells[0].innerHTML;
+  google.script.run.withSuccessHandler(populateForm).getRecordById(recordId);
 }
 
-  .dataTables_wrapper .dataTables_processing {
-    color: white;
-  }
+  //POPULATE FORM
+function populateForm(records) {
+  document.getElementById('actID').value = records[0][0];
+  document.getElementById('date').value = formatDateForInput(records[0][1]);
+  document.getElementById('projectID').value = records[0][2];
+  document.getElementById('picName').value = records[0][3];
+  document.getElementById('detailAct').value = records[0][4];
+  document.getElementById('cost').value = records[0][5];
+  document.getElementById('city').value = records[0][6];
+  document.getElementById('siteName').value = records[0][7];
 
-  .dataTables_wrapper .dataTables_info,
-  .dataTables_wrapper .dataTables_paginate .paginate_button {
-    color: white;
-  }
+  document.getElementById('actID').readOnly = true;
+  document.getElementById('date').readOnly = true;
+  document.getElementById('projectID').readOnly = true;
+  document.getElementById('picName').readOnly = true;
+  document.getElementById('detailAct').readOnly = true;
+  document.getElementById('cost').readOnly = true;
+  document.getElementById('siteName').readOnly = true;
 
-  .dataTables_wrapper .dataTables_paginate {
-    color: #fff;
-  }
-
-  .dataTables_wrapper .dataTables_paginate .paginate_button {
-    box-sizing: border-box;
-    display: inline-block;
-    min-width: 1.5em;
-    padding: 0.5em 1em;
-    margin-left: 2px;
-    text-align: center;
-    text-decoration: none !important;
-    cursor: pointer;
-    color: #fff !important;
-    border: 1px solid transparent;
-    border-radius: 2px;
+  document.getElementById('costCA').value = records[0][8]; 
+  document.getElementById('resultDet').value = records[0][9]; 
 }
 
-  .dataTables_wrapper .dataTables_filter label,
-  .dataTables_wrapper .dataTables_filter input {
-    color: white;
-  }
+// Fungsi untuk mengubah format tanggal untuk input tanggal HTML
+function formatDateForInput(dateString) {
+  var date = new Date(dateString);
+  var year = date.getFullYear();
+  var month = (date.getMonth() + 1).toString().padStart(2, '0');
+  var day = date.getDate().toString().padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
 
-  .dataTables_wrapper .dataTables_length select {
-    border: 1px solid #fff;
-    border-radius: 3px;
-    padding: 5px;
-    background-color: transparent;
-    padding: 4px;
-  } 
-
-  .dataTables_wrapper .dataTables_filter input {
-    border: 1px solid #fff;
-    border-radius: 3px;
-    padding: 5px;
-    background-color: transparent;
-    margin-left: 3px;
-  }
-
-  .dataTables_wrapper .dataTables_paginate .paginate_button.disabled, .dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover, .dataTables_wrapper .dataTables_paginate .paginate_button.disabled:active {
-    cursor: default;
-    color: #fff !important;
-    border: 1px solid transparent;
-    background: transparent;
-    box-shadow: none;
-  }
-
-  .dataTables_wrapper .dataTables_paginate .paginate_button.current, .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
-    color: #fff !important;
-    border: 1px solid rgb(255 254 254 / 99%);
-    background: linear-gradient(to bottom, rgba(230, 230, 230, 0.1) 0%, rgba(0, 0, 0, 0.1) 100%);
+function showNotification(message, isSuccess) {
+    var notificationElement = document.getElementById('notification');
+    notificationElement.textContent = message;
+    notificationElement.style.display = 'block';
+    notificationElement.classList.add(isSuccess ? 'alert-success' : 'alert-danger');
+    setTimeout(function() {
+        notificationElement.style.display = 'none';
+        notificationElement.classList.remove('alert-success', 'alert-danger');
+    }, 3000); // Hides the notification after 3 seconds
 }
 
 
-
-
-</style>
+</script>
