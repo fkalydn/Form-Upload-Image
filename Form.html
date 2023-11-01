@@ -1,0 +1,70 @@
+<form id="myForm" class="p-2 border border-light rounded bg-light" onsubmit="handleFormSubmit(this)">
+    <p class="h4 mb-4 text-center">Form Upload Nota</p>
+    <!-- <div id="message"></div>
+    <input type="text" id="actID" name="actID" value="" style="display: none"> -->
+
+	<div class="row">
+    <div class="form-group col-md-6 mb-2">
+		    <label for="actID" >Activity ID</label>
+		    <input type="text" class="form-control" id="actID" name="actID" readonly>
+	  </div>
+  
+		<div class="form-group col-md-6 mb-2">
+			<label for="date">Date</label>
+			<input type="date" class="form-control" id="date" name="date" readonly>
+		</div>
+
+    <div class="form-group col-md-6 mb-2">
+			<label for="projectID">Project ID</label>
+			<input type="text" class="form-control" id="projectID" name="projectID" readonly>
+		</div>
+
+    <div class="form-group col-md-6 mb-2">
+			<label for="siteName">Site Name</label>
+			<input type="text" class="form-control" id="siteName" name="siteName" readonly>
+		</div>
+
+    <div class="form-group col-md-6 mb-2">
+			<label for="city">City</label>
+			<input type="text" class="form-control" id="city" name="city" readonly>
+		</div>
+
+		<div class="form-group col-md-6 mb-2">
+			<label for="picName">PIC Name</label>
+			<input type="text" class="form-control" id="picName" name="picName" readonly>
+		</div>
+
+    <div class="form-group col-md-6 mb-2">
+			<label for="cost">Cash Advance</label>
+			<input type="text" class="form-control" id="cost" name="cost" readonly>
+		</div>
+
+    <div class="form-group col-md-6 mb-2">
+      <label for="costCA">Cost</label>
+        <input type="text" class="form-control" id="costCA" name="costCA" placeholder="Cost">
+    </div>
+
+	  <div class="form-group col-md-12 mb-2">
+		  <label for="detailAct">Detail Activity</label>
+      <textarea class="form-control" id="detailAct" name="detailAct" style="width: 100%; height: 100px;" placeholder="Detail Activity"></textarea>
+	  </div>
+
+    <div class="form-group col-md-12 mb-2">
+      <label for="resultDet">Result Details</label>
+      <!-- <input type="text" class="form-control" id="resultDet" name="resultDet" placeholder="Result Details"> -->
+      <textarea class="form-control" id="resultDet" name="resultDet" style="width: 100%; height: 100px;" placeholder="Result Details"></textarea>
+    </div>
+
+    <div class="form-group col-md-6 mb-2">
+      <label for="myFile">File</label>
+      <input type="file" class="form-control" id="myFile" name="myFile">
+    </div>
+
+    </div>
+
+	<!-- <button type="submit" class="btn btn-primary">Submit</button>
+    <input class="btn btn-secondary" type="reset" value="Reset"> -->
+    <div id="notification" class="alert" style="display: none;"></div>
+      <button type="submit" class="btn btn-primary" id="submitBtn">Submit</button>
+
+</form>
